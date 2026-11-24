@@ -1,0 +1,428 @@
+/* Pi Dashboard: the page is the board.
+   Palette: the official Raspberry Pi case. White case body, raspberry-red base,
+   graphite print, steel ports, the blue USB 3 tongue. Red is kept for the case
+   rim, the PWR light and danger, so ordinary data never looks like an alarm. */
+
+:root {
+  /* materials: the board looks the same in both themes, like a product photo */
+  --case: #FFFFFF;          /* case body */
+  --case-edge: #DADDE2;
+  --rim: #C51A4A;           /* raspberry-red case base */
+  --print: #1D1F24;         /* graphite text printed on the board */
+  --print-2: #5F6670;
+  --lid: #E7E9ED;           /* processor heat spreader */
+  --lid-edge: #C7CCD3;
+  --lid-track: #D3D7DD;     /* empty part of a core tile */
+  --epoxy: #1D1F24;         /* memory chip package */
+  --epoxy-2: #A9AEB7;
+  --steel: #D5D9DF;         /* port shells */
+  --steel-edge: #B3B9C2;
+  --pin: #B8BDC6;           /* GPIO pins */
+  --usb3: #2F6FD6;          /* blue USB 3 tongue */
+  --raspberry: #C51A4A;
+  --led-green: #2FCB6E;
+  --warn-fill: #B26A00;     /* core tile fills on the light lid */
+  --bad-fill: #C51A4A;
+  --ok-fill: #1D1F24;
+
+  /* page: the taste skill's dealt system for Pi Dashboard (palette cool-grey-cobalt, IBM Plex, sharp radius,
+     tonal buttons), shared with the landing page. One accent (cobalt) for the main button, focus and the
+     second data series; red stays for danger only. */
+  --page: #EEF0F3;
+  --surface: #FFFFFF;
+  --surface-2: #E2E5EA;
+  --ink: #0B0C0E;
+  --ink-2: #5D6470;
+  --rule: rgba(11, 12, 14, 0.10);
+  --rule-strong: rgba(11, 12, 14, 0.20);
+  --accent: #1F2DE6;
+  --accent-ink: #FFFFFF;
+  --plot-1: #0B0C0E;
+  --plot-2: #1F2DE6;
+  --plot-fill: rgba(11, 12, 14, 0.05);
+  --warn: #A55F00;
+  --bad: #C51A4A;
+  --focus: #1F2DE6;
+
+  /* sharp radius: 4 / 6 / 8 */
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 8px;
+
+  --font: "IBM Plex Sans", system-ui, sans-serif;
+  --font-cond: "IBM Plex Sans Condensed", "IBM Plex Sans", "Arial Narrow", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --tracking: -0.025em;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --page: #0B0C0E;
+  --surface: #17181A;
+  --surface-2: #222326;
+  --ink: #EEF0F3;
+  --ink-2: #8E8F92;
+  --rule: rgba(238, 240, 243, 0.10);
+  --rule-strong: rgba(238, 240, 243, 0.20);
+  --accent: #7B8CFF;
+  --accent-ink: #0B0C0E;
+  --plot-1: #EEF0F3;
+  --plot-2: #7B8CFF;
+  --plot-fill: rgba(238, 240, 243, 0.05);
+  --warn: #F5B83D;
+  --bad: #FF5C82;
+  --focus: #7B8CFF;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--page);
+  color: var(--ink);
+  font: 400 16px/1.5 var(--font);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+h1, h2, h3, p { margin: 0; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 3px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+main, .masthead, .foot { max-width: 1240px; margin: 0 auto; padding-left: clamp(16px, 4vw, 40px); padding-right: clamp(16px, 4vw, 40px); }
+
+/* ---------------------------------------------------------------- masthead */
+.masthead {
+  display: flex; align-items: flex-end; gap: 16px 40px; flex-wrap: wrap;
+  padding-top: 32px; padding-bottom: 28px;
+}
+.ident { flex: 1 1 320px; min-width: 0; }
+.ident h1 {
+  font: 500 clamp(32px, 5vw, 48px)/1 var(--font);
+  letter-spacing: var(--tracking);
+  overflow-wrap: anywhere;
+}
+.ident p { margin-top: 8px; color: var(--ink-2); font-size: 15px; }
+
+.vitals { display: flex; gap: 32px; margin: 0; }
+.vitals dt { color: var(--ink-2); font-size: 13px; }
+.vitals dd { margin: 2px 0 0; font: 500 20px/1.2 var(--font-cond); white-space: nowrap; }
+
+.masthead-actions { display: flex; align-items: center; gap: 8px; }
+/* tonal controls: a flat tint, no border; they step up on hover and press on click (the skill's hover layer) */
+.link, .icon-btn, .btn {
+  border: 0; border-radius: var(--r-sm); cursor: pointer;
+  background: var(--surface-2); color: var(--ink);
+  transition: transform 160ms cubic-bezier(.2, .7, .2, 1), background-color 160ms ease;
+}
+.link:hover, .icon-btn:hover, .btn:hover { transform: translateY(-1px); background: color-mix(in oklab, var(--surface-2), var(--ink) 7%); }
+.link:active, .icon-btn:active, .btn:active { transform: translateY(0) scale(.98); }
+.link {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 8px 14px; min-height: 44px;
+  font-size: 14px;
+}
+.icon-btn { width: 44px; height: 44px; display: grid; place-items: center; }
+
+/* LEDs: the board's real indicator lights */
+.led { display: inline-block; width: 9px; height: 9px; border-radius: 2px; background: #C3C8CF; flex: none; }
+.led.act.on { background: var(--led-green); box-shadow: 0 0 8px 1px rgba(47, 203, 110, .7); }
+.led.act.dead { background: #E3B5C2; }
+.led.pwr { background: var(--raspberry); box-shadow: 0 0 8px 1px rgba(197, 26, 74, .55); }
+.led.pwr.blink { animation: pwr-blink 0.9s steps(1) infinite; }
+@keyframes pwr-blink { 50% { background: #E7C3CD; box-shadow: none; } }
+
+/* ---------------------------------------------------------------- board */
+.board-wrap { padding: 4px 0 8px; }
+.board {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(150px, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.4fr) 168px;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "gpio gpio gpio ports"
+    "sd   soc  ram  ports"
+    "pwr  pwr  pwr  ports";
+  gap: 24px 28px;
+  padding: 26px 34px 22px 34px;                     /* every part sits inside the board */
+  background: var(--case);
+  border-radius: var(--r-lg);
+  /* the red case base shows as a rim under the white body */
+  box-shadow: 0 0 0 1px var(--case-edge), 0 6px 0 0 var(--rim), 0 22px 40px rgba(29, 31, 36, .16);
+  color: var(--print);
+  min-height: 430px;
+  margin-bottom: 6px;
+}
+.hole {
+  position: absolute; width: 18px; height: 18px; border-radius: 50%;
+  border: 3px solid var(--lid-edge); background: var(--page);
+  left: calc(14px + var(--x) * (100% - 46px));
+  top: calc(14px + var(--y) * (100% - 46px));
+}
+
+/* printed labels on the board, sentence case */
+.silk {
+  display: block; margin-bottom: 8px;
+  font: 500 14px/1 var(--font-cond); letter-spacing: .02em;
+  color: var(--print);
+}
+.silk-inline { font: 500 13px/1 var(--font); color: var(--print-2); }
+
+.part .big { font: 500 44px/1 var(--font-cond); letter-spacing: -0.01em; }
+.part .big small { font-size: 17px; font-weight: 500; margin-left: 3px; letter-spacing: 0; }
+.part .sub { font-size: 14px; margin-top: 6px; }
+
+.meter { height: 6px; border-radius: 3px; margin-top: 12px; overflow: hidden; }
+.meter span { display: block; height: 100%; width: 0; border-radius: 3px; transition: width .5s ease; }
+
+/* GPIO header: 2 x 20 pins in a graphite housing */
+.gpio { grid-area: gpio; padding-left: 40px; }
+.pins {
+  display: inline-grid; grid-template-columns: repeat(20, 12px); grid-template-rows: repeat(2, 12px); gap: 3px;
+  padding: 5px; background: var(--epoxy); border-radius: 3px;
+}
+.pins i { background: var(--pin); border-radius: 1px; }
+.pins i:first-child { border-radius: 0; box-shadow: inset 0 0 0 2px #7D838C; }  /* pin 1 is square */
+
+/* SD slot: a steel outline on the board edge */
+.sd { grid-area: sd; align-self: center; }
+.slot { border: 2px solid var(--steel-edge); border-radius: var(--r-md); padding: 14px; }
+.sd .sub { color: var(--print-2); }
+.sd .meter { background: var(--lid-track); }
+.sd .meter span { background: var(--print); }
+.sd .io { margin-top: 14px; line-height: 1.5; }
+.sd .io b { font-weight: 500; color: var(--print); }
+
+/* Processor: metal lid with dark print */
+.soc { grid-area: soc; }
+.lid {
+  background: var(--lid); color: var(--print);
+  border-radius: var(--r-md); padding: 20px 22px;
+  box-shadow: inset 0 0 0 1px var(--lid-edge), 0 2px 0 var(--lid-edge);
+}
+.lid-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.lid .big { font-size: 56px; }
+.lid .temp { font-size: 40px; }
+.lid .sub { color: var(--print-2); }
+.cores { display: grid; grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr)); gap: 8px; margin-top: 18px; }
+.core {
+  position: relative; height: 54px; border-radius: var(--r-sm); overflow: hidden;
+  background: var(--lid-track); box-shadow: inset 0 0 0 1px rgba(29, 31, 36, .08);
+}
+.core .fill { position: absolute; inset: auto 0 0 0; height: 0; background: var(--ok-fill); transition: height .5s ease; }
+.core.warn .fill { background: var(--warn-fill); }
+.core.bad .fill { background: var(--bad-fill); }
+.core .lbl { position: absolute; left: 7px; top: 5px; font: 500 13px/1.1 var(--font-cond); color: var(--print); }
+.core .lbl span { display: block; font-weight: 500; font-size: 11px; opacity: .8; }
+.core.high .lbl { color: #FFFFFF; }
+.core.high .lbl span { opacity: .9; }
+
+/* Memory: graphite chip package */
+.ram { grid-area: ram; }
+.chip {
+  background: var(--epoxy); color: #FFFFFF;
+  border-radius: 4px; padding: 20px 20px;
+  box-shadow: 0 2px 0 #000;
+}
+.chip .sub { color: var(--epoxy-2); }
+.chip .meter { background: #3A3E46; }
+.chip .meter span { background: #FFFFFF; }
+
+/* Ports: overhang the right edge like the real board */
+.ports {
+  grid-area: ports; display: flex; flex-direction: column; gap: 16px; justify-content: center;
+  padding: 8px 0;
+}
+.port {
+  position: relative; background: var(--steel); color: var(--print);
+  border-radius: 4px; padding: 12px 14px 12px 18px; min-height: 72px;
+  box-shadow: inset 0 0 0 1px var(--steel-edge), 0 2px 0 var(--steel-edge);
+}
+.port .tongue { position: absolute; left: 0; top: 14px; bottom: 14px; width: 5px; background: var(--usb3); border-radius: 0 2px 2px 0; }
+.port-name { font: 500 14px/1.2 var(--font-cond); }
+.port-val { font-size: 14px; line-height: 1.35; overflow-wrap: anywhere; }
+.port-val b { font: 500 18px/1.3 var(--font-cond); }
+.port .arrow { display: inline-block; width: 16px; }
+.port.empty .port-val { color: var(--print-2); }
+.eth { min-height: 108px; }
+
+/* Power corner: LEDs and their meaning */
+.power { grid-area: pwr; display: flex; align-items: center; gap: 22px; flex-wrap: wrap; padding-left: 22px; }  /* clear of the mounting hole */
+.leds { display: flex; gap: 16px; }
+.led-group { display: inline-flex; align-items: center; gap: 6px; }
+.power p { font-size: 15px; }
+.power p b { font-weight: 500; }
+
+/* status colours on the board (board is always light, so fixed light-surface values) */
+.part .is-warn, .part .big.is-warn { color: #A55F00; }
+.part .is-bad, .part .big.is-bad { color: #C51A4A; }
+.chip .is-warn, .chip .big.is-warn { color: #F5B83D; }
+.chip .is-bad, .chip .big.is-bad { color: #FF6F91; }
+.meter span.is-warn { background: #D08A12 !important; }
+.meter span.is-bad { background: #E0335F !important; }
+
+/* ---------------------------------------------------------------- sections */
+.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px 24px; flex-wrap: wrap; margin-bottom: 14px; }
+h2 { font: 500 24px/1.2 var(--font-cond); }
+.hint { color: var(--ink-2); font-size: 14px; }
+
+/* ---------------------------------------------------------------- history strips */
+.history { margin-top: 56px; }
+.strips { border-top: 1px solid var(--rule-strong); }
+.strip {
+  display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 20px;
+  border-bottom: 1px solid var(--rule);
+  min-height: 92px;
+}
+.strip-label { padding: 14px 0; }
+.strip-label h3 { font: 500 14px/1.2 var(--font); color: var(--ink-2); }
+.strip-val { font: 500 26px/1.15 var(--font-cond); margin-top: 4px; white-space: nowrap; }
+.strip-val.two { font-size: 17px; font-weight: 500; margin-top: 3px; color: var(--ink-2); }
+.strip-val.two span[data-val] { color: var(--ink); font-weight: 500; font-size: 19px; margin-left: 4px; }
+.strip-val .is-warn { color: var(--warn); }
+.strip-val .is-bad { color: var(--bad); }
+.key { display: inline-block; width: 14px; height: 2px; vertical-align: middle; margin-right: 7px; }
+.key.k1 { background: var(--plot-1); }
+.key.k2 { background: var(--plot-2); height: 3px; }
+.strip-plot { position: relative; min-height: 92px; cursor: crosshair; }
+.strip-plot canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.axis { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 20px; }
+.axis-ticks { position: relative; height: 24px; font-size: 13px; color: var(--ink-2); }
+.axis-ticks span { position: absolute; top: 5px; transform: translateX(-50%); white-space: nowrap; }
+.axis-ticks span:first-child { transform: none; }
+.axis-ticks span:last-child { transform: translateX(-100%); }
+
+/* ---------------------------------------------------------------- lower */
+.lower { display: grid; grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr); gap: 56px; margin-top: 56px; }
+
+.table-wrap { overflow-x: auto; }
+.procs { width: 100%; border-collapse: collapse; font-size: 15px; }
+.procs th { text-align: left; font-weight: 500; font-size: 13px; color: var(--ink-2); padding: 0 12px 8px 0; border-bottom: 1px solid var(--rule-strong); }
+.procs td { padding: 10px 12px 10px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.procs .num { text-align: right; white-space: nowrap; }
+.procs th:last-child, .procs td:last-child { padding-right: 0; }
+.procs .pname { font-weight: 500; }
+.procs .pcmd {
+  display: block; font: 400 13px/1.5 var(--font-mono); color: var(--ink-2); margin-top: 2px;
+  max-width: 46ch; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.procs .user { color: var(--ink-2); }
+.procs .cpu { font: 500 17px/1.3 var(--font-cond); }
+.procs .cpu.is-warn { color: var(--warn); }
+.procs .cpu.is-bad { color: var(--bad); }
+.procs .pid { color: var(--ink-2); font-size: 13px; font-weight: 400; margin-left: 6px; }
+
+.side { display: flex; flex-direction: column; gap: 44px; }
+.side h2 { margin-bottom: 14px; }
+.disks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 18px; }
+.disk-top { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+.disk-name { font-weight: 500; overflow-wrap: anywhere; }
+.disk-pct { font: 500 18px/1 var(--font-cond); }
+.disk-sub { font-size: 13px; color: var(--ink-2); margin-top: 2px; }
+.disk-bar { height: 4px; background: var(--rule); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+.disk-bar span { display: block; height: 100%; background: var(--plot-1); border-radius: 2px; }
+.disk-bar span.is-warn { background: var(--warn); }
+.disk-bar span.is-bad { background: var(--bad); }
+.disk-pct.is-warn { color: var(--warn); }
+.disk-pct.is-bad { color: var(--bad); }
+
+.facts { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px 20px; font-size: 15px; }
+.facts dt { color: var(--ink-2); }
+.facts dd { margin: 0; overflow-wrap: anywhere; }
+
+.foot { padding-top: 48px; padding-bottom: 40px; color: var(--ink-2); font-size: 14px; }
+body.demo .foot { padding-bottom: 96px; }
+
+/* ---------------------------------------------------------------- dialog + demo bar */
+.connect {
+  background: var(--surface); color: var(--ink);
+  border: 1px solid var(--rule-strong); border-radius: var(--r-lg);
+  padding: 28px; width: min(460px, calc(100vw - 32px));
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .25);
+}
+.connect::backdrop { background: rgba(23, 25, 29, .55); }
+.connect h2 { margin-bottom: 8px; }
+.connect p { color: var(--ink-2); font-size: 15px; margin-bottom: 16px; }
+.connect input {
+  width: 100%; padding: 11px 14px; border-radius: var(--r-sm);
+  border: 1px solid var(--rule-strong); background: var(--page); font-size: 16px;
+}
+.connect-error { color: var(--bad) !important; margin: 10px 0 0 !important; }
+.connect-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+.connect-actions #connect-demo { margin-right: auto; }
+.btn { min-height: 44px; padding: 10px 20px; font-weight: 500; font-size: 16px; }
+.btn.solid { background: var(--accent); color: var(--accent-ink); }   /* the one filled button: the main action */
+.btn.solid:hover { background: color-mix(in oklab, var(--accent), #000 12%); }
+
+.demo-bar {
+  position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 15;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;
+  width: max-content; max-width: calc(100vw - 32px);
+  padding: 8px 8px 8px 16px; border-radius: var(--r-lg);
+  background: var(--surface); border: 1px solid var(--rule-strong);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .18); font-size: 14px;
+}
+.demo-bar[hidden] { display: none; }
+.demo-bar label { font-weight: 500; color: var(--plot-2); }
+.demo-bar select { padding: 7px 10px; border-radius: var(--r-sm); background: var(--page); border: 1px solid var(--rule-strong); }
+.demo-bar .btn { padding: 6px 12px; font-size: 14px; }
+
+/* ---------------------------------------------------------------- responsive */
+@media (max-width: 1060px) {
+  .board {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) 168px;
+    grid-template-areas:
+      "gpio gpio ports"
+      "soc  soc  ports"
+      "ram  sd   ports"
+      "pwr  pwr  ports";
+    padding-left: 28px;
+  }
+  .gpio { padding-left: 0; }
+  .pins { grid-template-columns: repeat(20, 9px); grid-template-rows: repeat(2, 9px); gap: 2px; }
+  .slot { margin-left: 0; padding-left: 14px; border-left: 2px solid var(--steel-edge); border-radius: var(--r-md); }
+  .lower { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 680px) {
+  .masthead { padding-top: 22px; padding-bottom: 20px; }
+  .vitals { gap: 24px; }
+  .board-wrap { padding-right: 0; }
+  .board {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "gpio gpio"
+      "soc  soc"
+      "ram  ram"
+      "sd   sd"
+      "ports ports"
+      "pwr  pwr";
+    gap: 20px; padding: 22px 16px 20px; border-radius: var(--r-lg);
+  }
+  .hole { display: none; }
+  .power { padding-left: 0; }
+  .pins { grid-template-columns: repeat(20, minmax(0, 9px)); }
+  .gpio { overflow: hidden; }
+  .lid { padding: 16px; }
+  .lid .big { font-size: 46px; }
+  .lid .temp { font-size: 34px; }
+  .cores { gap: 6px; }
+  .ports { margin-right: 0; display: grid; grid-template-columns: 1fr 1fr; }
+  .port { border-radius: 4px; }
+  .eth { grid-column: span 2; min-height: 0; }
+  .strip, .axis { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .strip-label { padding: 12px 0 4px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; }
+  .strip-label h3 { width: 100%; }
+  .strip-val { font-size: 22px; margin: 0; }
+  .strip-plot { min-height: 80px; margin-bottom: 8px; }
+  .axis > span { display: none; }
+  .procs .pcmd { max-width: 26ch; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .meter span, .core .fill { transition: none; }
+  .link, .icon-btn, .btn { transition: none; }
+  .link:hover, .icon-btn:hover, .btn:hover, .link:active, .icon-btn:active, .btn:active { transform: none; }
+  .led.pwr.blink { animation: none; background: #E7C3CD; box-shadow: none; }
+}
